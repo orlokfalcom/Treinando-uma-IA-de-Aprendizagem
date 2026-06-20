@@ -1,120 +1,120 @@
-🚀 📘 Caderno Temático Inteligente com IA
+# 🚀 📘 Caderno Temático Inteligente: IA Generativa em Sistemas Bancários
 
-💡 Estudo avançado de Inteligência Artificial Generativa aplicada ao Desenvolvimento de Software
+### 💡 Estudo avançado de Inteligência Artificial Generativa aplicada ao Desenvolvimento de Software e Arquitetura Transacional Financeira
 
-🧭 Visão Geral
+---
 
-Este repositório documenta uma jornada estruturada de aprendizado sobre IA Generativa aplicada ao desenvolvimento de sistemas, combinando:
+## 🧭 Visão Geral
 
-🧠 Engenharia de Prompts
-📚 Curadoria de fontes técnicas
-⚙️ Síntese de conhecimento aplicado
-🔬 Experimentação prática com LLMs
-🎯 Objetivos do Projeto
+Este repositório documenta uma jornada estruturada de aprendizado e aplicação prática de **IA Generativa** no desenvolvimento e na arquitetura de **Sistemas Bancários e Meios de Pagamento**. A curadoria aborda os desafios específicos do setor de missão crítica: conformidade regulatória (BACEN, LGPD), sigilo bancário, mitigação de latência transacional, engenharia de prompts avançada e migração de sistemas legados de core banking.
 
-✨ Construir entendimento sólido sobre IA Generativa
-✨ Aplicar IA como assistente no desenvolvimento de software
-✨ Criar um repositório reutilizável de estudo técnico
-✨ Desenvolver pensamento estruturado e crítico
-✨ Evoluir habilidades de engenharia de prompts
+---
 
-🧩 Stack de Conhecimento
-🧠 IA Generativa
-⚡ LLMs (Large Language Models)
-🔄 Transformers
-💬 Engenharia de Prompts
-🧪 Experimentação com IA
-🏗️ Arquitetura de Software com IA
-📁 Estrutura do Projeto
-📦 caderno-ia-generativa
+## 🎯 Objetivos do Projeto
+
+*   **⚡ Construir Entendimento Sólido:** Dominar o ciclo de vida de LLMs (Pré-treino, SFT, RLHF/DPO) voltado ao contexto financeiro.
+*   **🔒 Arquitetar Soluções Seguras:** Projetar integrações de IA que respeitem o sigilo bancário através de Gateways de Privacidade (PII Redaction) e RAG com RBAC.
+*   **🛠️ Automatizar e Otimizar Engenharia:** Aplicar IA na migração de código legado (COBOL para Java/Go) e na geração de suítes de testes transacionais (Pix/Contas).
+*   **📈 Engenharia de Prompts de Alta Precisão:** Desenvolver prompts determinísticos e estruturados (JSON Mode, Pydantic) para APIs do Open Finance.
+*   **🛡️ Mitigação de Riscos Sistêmicos:** Implementar controle transacional rígido com aprovação humana (Human-in-the-Loop - HITL) e auditoria de decisões agênticas (XAI).
+
+---
+
+## 🧩 Stack de Conhecimento Bancário
+
+*   **🧠 IA Generativa & LLMs:** Modelos comerciais e de nuvem privada (Azure OpenAI, AWS Bedrock, vLLM local).
+*   **🔄 Transformers:** Mecanismo de Self-Attention aplicado à análise semântica de regulamentos e contratos.
+*   **🔒 Segurança e Conformidade:** LGPD, Resoluções do Banco Central (BACEN), PCI-DSS e IA Explicável (XAI).
+*   **🏗️ Padrões de Integração:** RAG (Retrieval-Augmented Generation) com filtros de RBAC e Gateways de PII.
+*   **⚙️ Core Banking Software:** Migração de Mainframes, APIs do Open Finance e concorrência transacional (antigasto duplo).
+
+---
+
+## 📁 Estrutura do Projeto
+
+```text
+caderno-ia-generativa
 │
-├── 📚 fontes/          → Artigos, papers e documentação
-├── 💬 prompts/        → Engenharia de prompts evolutiva
-├── 🧠 resumos/        → Síntese dos conceitos estudados
-├── 📖 glossario/      → Termos técnicos essenciais
-└── 📄 README.md       → Visão geral do projeto
-📚 Curadoria de Fontes
-🔹 Base Científica
-📄 Attention Is All You Need
-https://arxiv.org/abs/1706.03762
-🔹 Documentação Oficial
-📄 OpenAI Docs
-https://platform.openai.com/docs
-🔹 Aplicação Prática
-📄 GitHub Copilot
-https://github.com/features/copilot
-🔹 Pesquisa Avançada
-📄 Papers with Code
-https://paperswithcode.com
-🧠 Engenharia de Prompts
-🟢 Prompts Iniciais
-O que é IA Generativa?
-Explique Transformers de forma simples
-Como LLMs funcionam?
-🟡 Prompts Intermediários
-Compare IA tradicional vs IA generativa
-Explique LLMs com exemplos práticos
-Quais aplicações existem em software?
-🔴 Prompts Avançados
-Atue como arquiteto de software e desenhe um sistema com LLMs
-Crie uma arquitetura completa com IA integrada
-Gere código seguindo boas práticas e padrões reais
-⚠️ Cicatrizes de Aprendizado
+├── 📚 fontes/          → Papers científicos (cópia local), documentação oficial e links úteis
+│   ├── attention_is_all_you_need.pdf  → Paper clássico da arquitetura Transformer
+│   └── links.md                       → Curadoria de fontes de referência e documentações
+│
+├── 💬 prompts/        → Templates estruturados e guia de resolução de falhas em produção
+│   ├── prompts-basicos.md     → Categorização de faturas e triagem de atendimento (Few-shot)
+│   ├── prompts-avancados.md   → Geração de código Spring Boot transacional e auditoria BACEN
+│   └── troubleshooting.md     → Mitigação de alucinações, latência Pix e quebras de JSON
+│
+├── 🧠 resumos/        → Artigos detalhados e conceitos arquiteturais e teóricos
+│   ├── resumo-ia-generativa.md  → Funcionamento de LLMs vs IA Preditiva antifraude clássica
+│   ├── llms-explicacao.md       → Pipeline de treino financeiro e deploy em redes privadas
+│   ├── aplicacoes-software.md   → Casos práticos: COBOL -> Java, testes unitários e segurança
+│   └── arquitetura-com-ia.md    → RAG seguro, PII Redaction e fluxo agêntico com HITL
+│
+└── 📖 glossario/      → Terminologias cruciais detalhadas
+    └── glossario.md   → Termos de IA aplicados a finanças (RBAC, HITL, PII, XAI, Embeddings)
+```
 
-💥 Respostas genéricas → resolvido com contexto detalhado
-💥 Baixa precisão → resolvido com definição de papel da IA
-💥 Código inconsistente → resolvido com padrões de arquitetura
-💥 Alucinação da IA → mitigado com restrição de escopo
+---
 
-📘 Miniguia de Estudo
-🧩 Conceitos Essenciais
-🧠 IA Generativa → criação de conteúdo por modelos neurais
-🔄 Transformers → arquitetura baseada em atenção
-💬 Prompt → instrução enviada para IA
-🧩 Token → unidade de processamento textual
-⚠️ Hallucination → resposta incorreta gerada pelo modelo
-📌 Aplicações Reais
-⚙️ Geração de código
-🔧 Refatoração inteligente
-🧪 Criação de testes automatizados
-📄 Documentação automática
-🏗️ Apoio em arquitetura de sistemas
-🤖 Prompts Reutilizáveis
-💬 Explique [tema] como um especialista técnico
-💬 Gere uma arquitetura de software baseada em [contexto]
-💬 Crie código limpo seguindo boas práticas
-💬 Compare dois conceitos e destaque diferenças reais
-💬 Crie um plano de estudo estruturado sobre [tema]
-📈 Evolução Contínua
+## 📚 Curadoria de Fontes Fundamentais
 
-Este projeto é um sistema vivo 🧬
+### 📄 Base Científica e Técnica
+*   **Attention Is All You Need:** A base da arquitetura Transformer. [Paper Local](./fontes/attention_is_all_you_need.pdf).
+*   **ReAct Paper (Reasoning & Acting):** Padrão de raciocínio lógico em agentes financeiros. [Link Oficial](https://arxiv.org/abs/2210.03629).
 
-Ele evolui com:
+### 🛠️ Documentações de Plataformas
+*   **OpenAI Cookbook & Docs:** Guias de estruturação de parâmetros de geração determinísticos (`Temp = 0.0`). [Acessar Docs](https://platform.openai.com/docs).
+*   **Anthropic Claude Docs:** Padrões de prompts para análise de longos contratos de financiamento. [Acessar Docs](https://docs.anthropic.com).
+*   **Hugging Face:** Utilização e deploy de modelos Open Source locais para nuvens privadas de bancos. [Acessar Hub](https://huggingface.co).
 
-Novos testes de prompts
-Atualização de fontes
-Refinamento de conceitos
-Expansão de aplicações práticas
-🚀 Resultado Esperado
+---
 
-Ao concluir este estudo, você será capaz de:
+## 💬 Engenharia de Prompts Financeiros
 
-✔ Entender IA Generativa em profundidade
-✔ Usar IA como ferramenta de engenharia de software
-✔ Criar prompts avançados e reutilizáveis
-✔ Estruturar soluções com apoio de LLMs
-✔ Pensar de forma mais sistêmica e estratégica
+*   **🟢 Prompts Básicos ([prompts-basicos.md](./prompts/prompts-basicos.md)):**
+    *   *Categorização de Faturas:* Limpeza e categorização semântica de descrições sujas de compras de cartão de crédito.
+    *   *Triagem de Suporte (Few-shot):* Classificação de intenções de atendimento (extratos, contestação de Pix, bloqueio de cartão).
+*   **🔴 Prompts Avançados ([prompts-avancados.md](./prompts/prompts-avancados.md)):**
+    *   *Desenvolvedor Sênior Spring Boot:* Geração de código de transferência seguro com `@Transactional`, controle de concorrência contra gasto duplo e mascaramento de logs.
+    *   *Auditor de Conformidade BACEN:* Validação de termos de abertura de conta contra as regulamentações oficiais vigentes do Banco Central.
+    *   *Arquiteto de Software Pix:* Prompt ativo para desenho de pipelines assíncronos e tolerantes a falhas.
 
-🧭 Identidade do Projeto
-🧠 Inteligência + Estrutura + Automação
-⚙️ Engenharia de Software com IA
-🚀 Aprendizado contínuo e escalável
-🪪 Licença
+---
 
-📘 Material educacional livre para estudo e adaptação.
+## ⚠️ Cicatrizes de Aprendizado (Troubleshooting em Produção)
 
-🔥 Diferencial deste projeto
+*   **💥 Alucinações de Dados Financeiros:** Mitigado zerando a temperatura (`Temp = 0.0`) e aplicando RAG para embasar as respostas da IA exclusivamente em manuais vigentes do banco.
+*   **💥 Vazamento de PII nos Logs da Nuvem:** Resolvido implementando um **PII Redaction Gateway** local que anonimiza os dados do cliente antes do envio para APIs públicas e os reidrata no retorno do backend.
+*   **💥 Estouro do SLA de Latência no Pix:** Resolvido movendo o processamento pesado de IA para filas de processamento assíncrono (Kafka/RabbitMQ) e utilizando cache semântico (Redis) para diminuir o tempo de resposta síncrona.
+*   **💥 Quebra de Schemas JSON em APIs:** Mitigado enforcando a geração de JSON estruturado com esquemas rígidos de validação (Pydantic/Instructor) e loop de autocorreção (auto-healing).
 
-Este não é um simples resumo.
+---
 
-É um sistema de aprendizado estruturado com IA como parceira cognitiva.
+## 📘 Miniguia de Estudo Financeiro
+
+### 🧩 Termos Essenciais
+1.  **PII Masking:** Anonimização de dados pessoais e transacionais de clientes.
+2.  **Explainable AI (XAI):** Rastreabilidade e explicabilidade das decisões autônomas do modelo para auditoria.
+3.  **Human-in-the-Loop (HITL):** Etapa de aprovação por senha ou biometria em fluxos financeiros gerados por IA.
+4.  **RBAC em Bancos Vetoriais:** Filtragem de buscas semânticas para respeitar as permissões de acesso do cargo do colaborador.
+
+### 📌 Aplicações Reais no SDLC Bancário
+*   **Geração de Massa de Testes:** Cobertura de edge cases em cálculos de amortização de parcelas, juros e finais de semana.
+*   **Migração COBOL para Java/Go:** Redução drástica do custo operacional herdado de mainframes corporativos tradicionais.
+*   **Varredura PCI-DSS:** Impedir código gerado por IA de armazenar dados brutos de cartão de crédito.
+
+---
+
+## 📈 Evolução Contínua
+
+Este caderno de estudos é um sistema vivo 🧬 que evolui com:
+*   Novas regras de segurança contra Prompt Injection em sistemas financeiros.
+*   Padrões de design de APIs atualizados com as diretrizes do Open Finance Brasil.
+*   Novas resoluções regulatórias do BACEN e práticas de auditoria automática.
+*   Testes de desempenho de inferência local (vLLM) de modelos financeiros.
+
+---
+
+## 🪪 Licença e Uso
+
+Material didático aberto e de referência para engenheiros de software, arquitetos de sistemas e profissionais de segurança que integram IA Generativa em plataformas de missão crítica do setor financeiro.

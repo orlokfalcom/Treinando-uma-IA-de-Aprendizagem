@@ -1,57 +1,47 @@
-# ⚠️ Guia de Resolução de Problemas (Troubleshooting) com LLMs
+# ⚠️ Resolução de Problemas (Troubleshooting) em IA Financeira
 
-Trabalhar com modelos de linguagem generativos introduz desafios únicos devido à sua natureza probabilística e não-determinística. Este guia detalha problemas comuns em integrações com LLMs e como solucioná-los.
-
----
-
-## 💥 1. Respostas Genéricas, Vagas ou Irrelevantes
-
-*   **Sintoma:** O modelo gera respostas muito superficiais, ignorando restrições específicas do seu problema.
-*   **Causa:** Falta de contexto ou papel (persona) mal definido.
-*   **Solução:**
-    *   **Definição de Papel (Roleplay):** Sempre inicie o prompt dizendo quem a IA deve ser (ex: *"Você é um revisor de segurança de código Python"*).
-    *   **Grounding (Aterramento):** Forneça documentos, códigos ou dados específicos no prompt e instrua o modelo a responder *exclusivamente* com base neles.
-    *   **Uso de Delimitadores:** Use tags XML (ex: `<codigo> ... </codigo>`) para isolar os dados e evitar confusões com as instruções.
+Integrar modelos de linguagem (LLMs) em sistemas de produção bancários e transacionais exige cuidados especiais. Este guia mapeia falhas comuns de arquitetura de IA em finanças e como resolvê-las.
 
 ---
 
-## 💥 2. Alucinação (Geração de Fatos ou APIs Falsas)
+## 💥 1. Falta de Explicabilidade e Rastreabilidade (Auditoria e Legal)
 
-*   **Sintoma:** O modelo inventa uma biblioteca de código que não existe, inventa um parâmetro fictício ou afirma fatos incorretos com convicção.
-*   **Causa:** O modelo preenche lacunas de conhecimento gerando a combinação de palavras mais provável sintaticamente, sem validação lógica.
-*   **Solução:**
-    *   **Reduza a Temperatura:** Configure a temperatura para `0.0` ou próximo disso para diminuir a criatividade e incentivar respostas factuais e reproduzíveis.
-    *   **Opção de Escape:** Adicione uma instrução explícita como: *"Se você não tiver certeza ou se a informação não estiver presente no contexto fornecido, diga 'Não sei'. Não invente fatos."*
-    *   **Grounding via RAG:** Nunca dependa puramente do conhecimento de treinamento da IA para dados dinâmicos ou específicos da empresa; recupere os dados de um banco vetorial primeiro.
-
----
-
-## 💥 3. Respostas JSON Inválidas (Estrutura Quebrada em APIs)
-
-*   **Sintoma:** O backend tenta fazer o parser de uma resposta do LLM e ocorre falha porque o modelo esqueceu de fechar uma chave `}`, usou aspas incorretas, ou encapsulou a resposta em blocos de código Markdown (como ```json ... ```).
-*   **Causa:** Os LLMs são geradores de texto livre por padrão e nem sempre seguem a sintaxe JSON perfeitamente.
-*   **Solução:**
-    *   **JSON Mode:** Habilite o parâmetro de "JSON Mode" ou "Structured Outputs" na API oficial da IA (OpenAI, Gemini e Claude suportam essa opção nativamente).
-    *   **Few-shot Examples:** Forneça no prompt um exemplo exato do formato JSON que você espera receber.
-    *   **Bibliotecas de Enforcamento de Schema:** Utilize bibliotecas que geram prompts e validam retornos automaticamente usando Pydantic ou esquemas de gramática (como `Instructor` em Python ou `Outlines`).
+*   **Sintoma:** Um agente de IA executou uma tarefa (como negar um reembolso ou aprovar um perfil de empréstimo), mas a equipe de auditoria ou compliance não consegue identificar o motivo da decisão.
+*   **Risco:** Sanções regulatórias do Banco Central ou processos judiciais por recusa injustificada de serviços.
+*   **Solução (Traceability Architecture):**
+    *   **Auditoría de Pensamento:** Grave o fluxo de raciocínio (Chain-of-Thought) da IA em banco de dados estruturado e imutável (ex: PostgreSQL/Oracle com chaves de auditoria). Salve o prompt exato enviado, o contexto retornado do RAG e o JSON final de saída do modelo.
+    *   **Strict Temperature:** Mantenha a `temperatura = 0.0` para que, diante do mesmo contexto e pergunta, a resposta seja determinística e passível de reprodução exata em testes de auditoria.
 
 ---
 
-## 💥 4. Loops de Repetição de Texto
+## 💥 2. Latência Excessiva em Operações de Pagamento Síncronas (Pix/Cartões)
 
-*   **Sintoma:** O modelo fica "preso" e começa a repetir a mesma frase ou parágrafo indefinidamente na resposta.
-*   **Causa:** A probabilidade dos tokens que formam aquela frase repetida tornou-se excessivamente alta devido ao histórico imediato.
-*   **Solução:**
-    *   **Ajuste Penalidades:** Aumente o parâmetro `presence_penalty` ou `frequency_penalty` para valores entre `0.1` e `0.5`. Isso penaliza o modelo por escolher palavras repetidas.
-    *   **Temperatura:** Aumente ligeiramente a temperatura para quebrar o determinismo do loop.
+*   **Sintoma:** O uso de LLMs em APIs síncronas de pagamento estoura o tempo limite (SLA de liquidação do Pix do Banco Central, que geralmente é de pouquíssimos segundos).
+*   **Causa:** APIs de LLMs em nuvem pública sofrem de oscilação de rede e o tempo de geração de tokens (Time to First Token - TTFT) é inerentemente alto.
+*   **Solução (Optimization & Asynchrony):**
+    *   **Processamento Assíncrono:** Mantenha o LLM fora do caminho crítico da liquidação síncrona. Use a IA para gerar propostas de forma assíncrona (via Kafka/RabbitMQ) e envie o resultado para uma fila transacional de aprovação.
+    *   **Modelos Especializados e Menores:** Se a operação exigir síncronidade (ex: assistente de chat que calcula extrato), use modelos menores (ex: LLaMA 3 8B ou Mistral 7B) hospedados na própria infraestrutura bancária otimizados com motores de inferência rápida (como **vLLM** ou **TensorRT-LLM**).
+    *   **Cache Semântico:** Implemente cache de queries semânticas usando Redis. Se a intenção do cliente for a mesma já resolvida recentemente, retorne a resposta salva em menos de 10ms.
 
 ---
 
-## 💥 5. Limites de Janela de Contexto Estourados
+## 💥 3. Quebra de Schemas JSON em APIs do Open Finance
 
-*   **Sintoma:** A API retorna um erro de código HTTP 400 informando que o limite de tokens da janela de contexto foi ultrapassado.
-*   **Causa:** A conversa está muito longa ou o contexto inserido (arquivos/documentos) é grande demais.
-*   **Solução:**
-    *   **Estratégias de Resumo (Summarization):** À medida que a conversa avança, peça para o modelo resumir as mensagens anteriores e passe apenas o resumo no histórico.
-    *   **Janela Deslizante (Sliding Window):** Mantenha apenas as últimas $N$ interações do chat na memória da API.
-    *   **Relação de busca (Retrieval):** Em vez de enviar o arquivo de código inteiro, quebre-o em funções relevantes e faça buscas vetoriais para enviar apenas o trecho que está sendo editado ou discutido.
+*   **Sintoma:** O LLM falha ao gerar saídas em formato JSON válido, enviando campos de tipos incorretos (ex: mandando uma string em um campo que devia ser int) ou incluindo textos em markdown (como ` ```json `), travando a integração com APIs do Open Finance.
+*   **Causa:** Pequenas variações de comportamento e falta de tipagem estrita nos modelos de texto tradicionais.
+*   **Solução (Strict Validation & Auto-healing):**
+    *   **Validação Pydantic:** Use bibliotecas como `Instructor` ou `Outlines` que forçam o LLM a obedecer a um modelo Pydantic, rejeitando qualquer token fora do padrão de tipos.
+    *   **Loop de Auto-correção (Auto-healing):** Implemente um validador de schema no backend. Se a resposta da IA quebrar o schema:
+        1. Capture a mensagem de erro do parser JSON.
+        2. Reenvie o JSON com erro e o stacktrace de erro de volta para a IA com a instrução: *"Você gerou um JSON inválido com este erro: [stacktrace]. Corrija-o imediatamente preservando os dados."*
+        3. Realize no máximo uma tentativa de autocorreção antes de acionar um fallback seguro.
+
+---
+
+## 💥 4. Vazamento de Dados Sensíveis nos Logs da Nuvem (Data Leakage)
+
+*   **Sintoma:** Dados de cartões (número PAN, CVV) ou dados pessoais de clientes (CPF, saldos) vazaram para logs de monitoramento da nuvem do LLM (AWS CloudWatch, Datadog ou console da OpenAI).
+*   **Causa:** Falha na sanitização de dados no pipeline de dados que alimenta a IA.
+*   **Solução (PII Shielding):**
+    *   **DLP (Data Loss Prevention):** Crie uma regra ativa no gateway de rede impedindo o tráfego de dados que correspondam a padrões de números de cartões (validando pelo algoritmo de Luhn) ou CPF/CNPJ.
+    *   **PII Masking Gateway:** Implemente e valide unitariamente a camada de anonimização (como visto em [arquitetura-com-ia.md](file:///E:/documentos/GitHub/Treinando-uma-IA-de-Aprendizagem/resumos/arquitetura-com-ia.md)) antes de qualquer requisição de prompt sair da rede segura do banco.

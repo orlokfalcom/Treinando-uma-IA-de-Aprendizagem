@@ -1,80 +1,60 @@
-# 📖 Glossário de IA Generativa e Engenharia de Prompts
+# 📖 Glossário de IA Generativa em Sistemas Bancários e Financeiros
 
-Este glossário reúne e explica detalhadamente os principais termos técnicos utilizados no universo da Inteligência Artificial Generativa e no desenvolvimento de sistemas auxiliados por LLMs.
+Este glossário reúne e explica detalhadamente os termos técnicos essenciais no desenvolvimento de sistemas financeiros integrados com IA Generativa, com foco em segurança, conformidade regulatória e engenharia de software.
+
+---
+
+### 🔒 Segurança, Conformidade e Sigilo Bancário
+
+#### 1. Mascaramento de PII (Personally Identifiable Information)
+Processo automatizado de anonimização ou substituição de dados sensíveis de clientes (como CPF, nome completo, número de conta corrente, dados de cartão de crédito e saldos) por valores fictícios ou tokens genéricos antes do envio para modelos de linguagem hospedados fora da rede do banco. Essencial para conformidade com a LGPD e o Sigilo Bancário.
+
+#### 2. IA Explicável (XAI - Explainable AI)
+Conjunto de processos e métodos que permite a auditores humanos compreender e confiar nos resultados gerados por modelos de IA. No setor bancário, é crucial para explicar por que uma IA recusou um limite de crédito ou por que sinalizou uma transação como potencial fraude, garantindo o direito à explicação previsto em leis financeiras.
+
+#### 3. RAG com RBAC (Role-Based Access Control)
+Arquitetura de busca semântica onde a recuperação de documentos e respostas do LLM respeita rigorosamente as permissões de acesso do usuário logado (ex: um atendente de agência não pode recuperar relatórios de auditoria interna restritos à diretoria por meio do chatbot do banco).
+
+#### 4. PCI-DSS em Pipelines de IA
+Adaptação das normas internacionais de segurança da indústria de cartões de pagamento (PCI-DSS) para garantir que números de cartões (PAN) e códigos de segurança não sejam armazenados em logs de chamadas de LLM, caches de prompts ou bancos de dados vetoriais de suporte ao cliente.
+
+#### 5. Human-in-the-Loop (HITL) Financeiro
+Mecanismo de controle que insere uma etapa obrigatória de aprovação por um operador humano (ou pelo próprio cliente do banco) antes que uma ação financeira sugerida por um agente de IA (como realizar uma transferência Pix ou contratar um empréstimo) seja de fato liquidada no core banking.
 
 ---
 
 ### 🧠 Conceitos Fundamentais e Arquitetura
 
-#### 1. Inteligência Artificial Generativa (GenAI)
-Ramo da inteligência artificial focado no desenvolvimento de modelos capazes de gerar novos conteúdos (como texto, imagens, áudio, vídeo ou código) com base em padrões aprendidos a partir de dados de treinamento.
+#### 6. LLM (Large Language Model) Bancário
+Modelos de linguagem ajustados finamente (Fine-tuning) com jargões financeiros locais, circulares do Banco Central e regulamentos de conformidade interna, sendo capazes de entender termos complexos como taxas de spread, portabilidade de crédito e tributação de fundos.
 
-#### 2. LLM (Large Language Model)
-Modelos de linguagem de grande escala baseados em aprendizado profundo (Deep Learning). São treinados em volumes massivos de dados textuais para prever a próxima palavra (ou token) em um contexto, sendo capazes de compreender e gerar linguagem natural de forma altamente fluida.
+#### 7. Transformer
+A arquitetura neural baseada no mecanismo de *Self-Attention* (Atenção Própria). No contexto bancário, sua capacidade de processar grandes sequências de texto paralelamente permite analisar rapidamente contratos longos de financiamento ou circulares regulatórias complexas de centenas de páginas.
 
-#### 3. Transformer
-Arquitetura de rede neural introduzida no paper *"Attention Is All You Need"* (2017) que revolucionou o processamento de linguagem natural. Utiliza conexões paralelas para processar dados de texto sequenciais, permitindo capturar o contexto de longo alcance em frases e parágrafos de forma muito mais eficiente que as arquiteturas anteriores (como RNNs e LSTMs).
+#### 8. Token
+A unidade fundamental de processamento do modelo. Em sistemas bancários, a tokenização correta de termos numéricos, taxas de juros (ex: "10,75% a.a.") e strings de JSON é crítica para que a IA não altere ou interprete incorretamente dados numéricos críticos.
 
-#### 4. Mecanismo de Atenção (Self-Attention)
-Componente central dos Transformers que permite ao modelo calcular a importância de diferentes palavras (tokens) em uma frase em relação a uma palavra específica, independentemente da distância entre elas. Isso ajuda a IA a entender o contexto completo de uma sentença.
-
-#### 5. Token
-A unidade básica de processamento dos modelos de linguagem. Um token não equivale necessariamente a uma palavra inteira; pode ser uma palavra, um caractere, parte de uma palavra (sufixo/prefixo) ou até espaços. Em média, 100 tokens correspondem a cerca de 75 palavras em inglês.
-
-#### 6. Janela de Contexto (Context Window)
-A quantidade máxima de dados (medida em tokens) que um modelo pode processar de uma única vez em uma única requisição (incluindo o prompt do usuário e a resposta gerada). Se a conversa exceder esse limite, as informações mais antigas começam a ser "esquecidas" pela IA.
+#### 9. Janela de Contexto (Context Window)
+O limite de memória operacional da IA em uma chamada. Útil para carregar regulamentos completos do Banco Central (BACEN) ou o histórico recente de faturas do cliente para que a IA possa responder a perguntas complexas contextualizadas.
 
 ---
 
-### 💬 Engenharia de Prompts e Interação
+### ⚙️ Integração e Termos Técnicos
 
-#### 7. Prompt
-A instrução, pergunta ou texto de entrada que você fornece a um modelo de IA para orientar sua resposta ou execução de tarefa.
+#### 10. Grounding Transacional
+Técnica de ancoragem que consiste em injetar dados reais, estruturados e auditados de transações financeiras (como extrato de conta em tempo real do banco de dados relacional SQL) diretamente no prompt da IA, impedindo que ela alucine valores ou transações inexistentes.
 
-#### 8. Engenharia de Prompts (Prompt Engineering)
-A prática de estruturar, formular e refinar prompts sistematicamente para obter as respostas mais precisas, consistentes e úteis possíveis de um modelo de linguagem.
+#### 11. Banco de Dados Vetorial (Vector DB)
+Banco especializado em buscar trechos de regulamentos, manuais internos e termos de serviço usando semântica. No banco, os dados são armazenados na forma de **Embeddings** (vetores de alta dimensão).
 
-#### 9. System Prompt / Instrução do Sistema
-Instruções de alto nível configuradas antes da conversa para definir o comportamento persistente da IA, seu tom, personalidade, regras de segurança, restrições e o escopo de atuação.
+#### 12. RAG (Retrieval-Augmented Generation)
+Arquitetura usada para responder a perguntas de clientes ou analistas baseando-se exclusivamente nos manuais de crédito ou circulares regulatórias vigentes do banco, minimizando drasticamente o risco de alucinações.
 
-#### 10. Zero-shot vs. Few-shot Prompting
-*   **Zero-shot:** Pedir à IA para realizar uma tarefa sem fornecer nenhum exemplo de resposta esperada.
-*   **Few-shot:** Fornecer um ou mais exemplos estruturados de entrada e saída dentro do prompt para ensinar a IA o padrão de resposta que se deseja obter.
+#### 13. Agente de IA Financeiro
+Sistemas de software que utilizam LLMs para tomar decisões complexas de forma autônoma (ex: analisar uma contestação de compra, verificar se o cliente cumpre regras de estorno e acionar a API de reembolso automaticamente).
 
-#### 11. Alucinação (Hallucination)
-Fenômeno no qual o modelo de linguagem gera informações factualmente incorretas, inexistentes ou absurdas de maneira muito confiante e plausível. Geralmente ocorre por falta de dados reais sobre o assunto no treinamento ou por prompts ambíguos.
+#### 14. Chamada de Função (Function Calling / Tool Use)
+Capacidade do LLM de traduzir a intenção do cliente em comandos estruturados para as APIs bancárias (ex: o cliente digita "quero bloquear meu cartão final 4321" e o modelo responde gerando um JSON que invoca o endpoint `/api/v1/card/block` com os argumentos corretos).
 
----
-
-### ⚙️ Ajuste e Parâmetros de Configuração
-
-#### 12. Fine-Tuning (Ajuste Fino)
-Processo de pegar um modelo base já treinado e continuar seu treinamento em um conjunto de dados menor e específico para torná-lo especialista em uma tarefa, domínio ou estilo particular.
-
-#### 13. RLHF (Reinforcement Learning from Human Feedback)
-Aprendizado por Reforço com Feedback Humano. Método de alinhamento de LLMs onde revisores humanos avaliam e classificam as respostas da IA. O modelo é então treinado para maximizar as respostas preferidas pelos humanos, tornando-o mais seguro, prestativo e menos propenso a gerar conteúdos nocivos.
-
-#### 14. Temperatura (Temperature)
-Parâmetro de configuração que controla a criatividade e a aleatoriedade das respostas da IA. Valores baixos (perto de 0.0) tornam a IA determinística e factual (focando nos tokens mais prováveis), enquanto valores altos (perto de 1.0 ou mais) tornam as respostas mais criativas, variadas e imprevisíveis.
-
-#### 15. Top-p (Nucleus Sampling)
-Controla a diversidade de palavras consideradas pela IA ao acumular as opções mais prováveis até atingir uma probabilidade acumulada `p` (por exemplo, `p=0.9` avalia apenas as palavras que compõem 90% da probabilidade de ocorrência). Funciona como uma alternativa ou complemento à Temperatura.
-
----
-
-### 🏗️ Integração e Arquitetura de Sistemas
-
-#### 16. Embeddings
-Representações matemáticas de palavras, frases ou parágrafos em vetores numéricos de alta dimensão. Textos com significados semanticamente semelhantes são mapeados para posições geometricamente próximas no espaço vetorial, permitindo que computadores comparem conceitos.
-
-#### 17. Banco de Dados Vetorial (Vector Database)
-Banco de dados especializado em armazenar e realizar buscas rápidas de proximidade em embeddings de alta dimensão. É essencial para sistemas de busca semântica e RAG.
-
-#### 18. RAG (Retrieval-Augmented Generation)
-Geração Aumentada de Recuperação. Arquitetura que estende as capacidades de um LLM buscando informações atualizadas ou privadas em uma base de dados externa (usando busca semântica em banco vetorial) e inserindo essas informações no prompt da IA para que ela responda com base em fatos reais e auditáveis.
-
-#### 19. Agente de IA (AI Agent)
-Um sistema de software que usa um LLM como cérebro central para planejar, decidir e executar tarefas complexas de forma autônoma. O agente decide quais ferramentas chamar e como prosseguir iterativamente até alcançar o objetivo estabelecido.
-
-#### 20. Chamada de Função (Function Calling / Tool Use)
-Capacidade do modelo de reconhecer quando uma tarefa exige acesso a informações externas ou ações do sistema (ex: consultar um banco de dados, enviar um e-mail ou fazer contas) e retornar um JSON formatado indicando qual função chamar e com quais argumentos.
+#### 15. Caching Semântico Bancário
+Armazenamento local de respostas a perguntas comuns de clientes para reduzir custos e latência (ex: dúvidas frequentes sobre taxas do Pix), garantindo que as respostas sejam respondidas instantaneamente de forma segura.

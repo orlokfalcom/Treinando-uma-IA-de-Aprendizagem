@@ -1,75 +1,95 @@
-# 🏗️ Arquitetura de Sistemas Integrados com IA
+# 🏗️ Arquitetura de Integração de IA em Sistemas Bancários
 
-Integrar modelos de linguagem (LLMs) em sistemas de produção exige padrões de arquitetura de software específicos que garantam desempenho, segurança, custo controlado e consistência das respostas.
+A arquitetura de sistemas com IA em ambientes financeiros difere de arquiteturas genéricas pela presença mandatória de camadas de controle de privacidade, segurança transacional e conformidade regulatória.
 
 ---
 
-## 🔍 Padrão 1: Retrieval-Augmented Generation (RAG)
+## 🔍 1. RAG Seguro com RBAC (Filtro por Nível de Acesso)
 
-O **RAG (Geração Aumentada de Recuperação)** é a arquitetura padrão para alimentar o LLM com dados atualizados, dinâmicos ou privados, sem a necessidade de realizar um treinamento ou ajuste fino dispendioso do modelo.
-
-### Fluxo de Funcionamento do RAG:
+Em bancos, nem todas as informações internas podem ser acessadas por todos os colaboradores. O RAG Bancário deve integrar o controle de acesso baseado em papéis (RBAC - Role-Based Access Control) diretamente na busca semântica:
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor U as Usuário
-    participant APP as Aplicação/Backend
-    participant DB as Banco de Dados Vetorial
-    participant LLM as Modelo de Linguagem (LLM)
+    actor U as Operador/Gerente
+    participant API as API Gateway / Backend
+    participant PII as Gateway de Privacidade (PII Redactor)
+    participant DB as Banco Vetorial (com Metadados de RBAC)
+    participant LLM as LLM (Nuvem Segura)
 
-    U->>APP: Envia pergunta (ex: "Qual a nossa política de reembolso?")
-    APP->>APP: Transforma a pergunta em Embedding (Vetor)
-    APP->>DB: Busca vetores mais semelhantes (Semântica)
-    DB-->>APP: Retorna trechos de documentos relevantes
-    APP->>APP: Constrói Prompt: "Responda à pergunta [X] com base no contexto [Y]"
-    APP->>LLM: Envia Prompt Consolidado
-    LLM-->>APP: Retorna Resposta Baseada em Fatos
-    APP-->>U: Exibe Resposta Factual ao Usuário
+    U->>API: Pergunta: "Qual o limite do empréstimo de João Silva?"
+    API->>PII: Envia requisição
+    PII->>PII: Mascara dados sensíveis: "João Silva" -> [CLIENT_1]
+    API->>DB: Busca semântica filtrada (Filtro: grupo_acesso = 'gerentes_credito')
+    DB-->>API: Retorna trechos autorizados mascarados
+    API->>LLM: Envia Prompt: "Responda à pergunta sobre [CLIENT_1] usando os trechos [Y]"
+    LLM-->>API: Retorna Resposta: "O limite pré-aprovado de [CLIENT_1] é R$ 50.000."
+    API->>PII: Solicita reidratação da resposta
+    PII->>PII: Desmascara: [CLIENT_1] -> "João Silva"
+    API-->>U: Resposta: "O limite pré-aprovado de João Silva é R$ 50.000."
 ```
 
-*   **Chunking (Divisão em Blocos):** Técnica de quebrar documentos longos em pedaços menores (ex: 500 caracteres com 10% de sobreposição) para caber na janela de contexto e otimizar a busca vetorial.
-*   **Vector Database:** Bancos especializados (como Pinecone, Milvus, Qdrant, PGVector) que realizam busca por cosseno ou distância euclidiana em representações vetoriais de texto (embeddings).
+*   **Metadata Filtering:** Cada documento no banco vetorial possui metadados com as tags de permissão (ex: `{"roles_permitidos": ["diretoria", "risco"]}`). O backend injeta essa restrição na query de busca semântica para impedir vazamento de documentos confidenciais.
 
 ---
 
-## ⚙️ Padrão 2: Chamada de Função (Function Calling / Tool Use)
+## 🛡️ 2. Gateway de Privacidade (PII Redaction Engine)
 
-Permite conectar LLMs a APIs externas, bancos de dados relacionais e sistemas legados. O modelo não executa o código diretamente, mas atua como o tomador de decisão que define *quando* e *como* chamar uma função externa.
+Camada arquitetural obrigatória posicionada entre o backend do banco e a API do LLM externo. Sua função é garantir o cumprimento do Sigilo Bancário e LGPD.
+
+*   **Fase de Envio (Redaction):**
+    *   O motor intercepta o prompt e usa expressões regulares (regex) combinadas com modelos locais de Reconhecimento de Entidade Nomeada (NER) treinados em português.
+    *   Substitui dados sensíveis por tokens sintáticos estáveis:
+        *   `Carlos Eduardo` $\rightarrow$ `[NAME_1]`
+        *   `322.455.123-09` $\rightarrow$ `[CPF_1]`
+        *   `Conta: 12345-6` $\rightarrow$ `[ACCOUNT_1]`
+*   **Fase de Retorno (Rehydration):**
+    *   O gateway mantém um mapa temporário em memória (ex: Redis com TTL curto) associando os tokens aos dados reais.
+    *   Ao receber a resposta do LLM, substitui de volta os tokens pelos valores reais antes de entregar a resposta na tela do cliente.
+
+---
+
+## 🤖 3. Padrão Agêntico Transacional com HITL (Human-in-the-Loop)
+
+Nenhum agente de IA em sistema bancário deve ter permissão de escrita direta ou liquidação financeira de forma 100% autônoma. O padrão de arquitetura deve exigir uma confirmação humana explícita.
 
 ```
-Usuário: "Qual o status do meu pedido 12345?"
-  └── LLM analisa o prompt e suas ferramentas declaradas.
-  └── LLM responde com JSON estruturado (sem gerar texto livre):
-      {
-        "name": "obter_status_pedido",
-        "arguments": { "id_pedido": 12345 }
-      }
-  └── Sistema Backend intercepta o JSON, executa a consulta no banco de dados SQL.
-  └── Sistema Backend envia o resultado da consulta de volta para o LLM.
-  └── LLM formata o resultado em linguagem natural para o usuário:
-      "Seu pedido 12345 já foi enviado e está a caminho da transportadora."
+[Cliente no Chat]
+"Quero fazer um Pix de 100 reais para o meu irmão."
+
+     │  (1) Identificação de Intenção e Parâmetros
+     ▼
+[Agente de IA]
+Analisa o prompt e monta a proposta em JSON (sem executar a transação):
+{
+  "action": "TRANSFERENCIA_PIX",
+  "status": "AWAITING_HITL_CONFIRMATION",
+  "arguments": {
+    "valor": 100.00,
+    "destinatario": "Irmão (Chave Pix CPF: ***.321.***-**)"
+  }
+}
+
+     │  (2) Intercepção de Segurança do Backend
+     ▼
+[Backend Core Banking]
+Identifica que a ação é financeira. 
+Pausa o fluxo da IA e aciona o módulo de autenticação.
+
+     │  (3) Fluxo de Confirmação do Cliente (HITL)
+     ▼
+[Interface do App Bancário]
+Exibe uma tela nativa segura:
+"Confirmar Pix de R$ 100,00 para [Destinatário]?
+Por favor, digite sua senha de 6 dígitos ou biometria."
+
+     │  (4) Liquidação e Resposta
+     ▼
+[Cliente digita a senha] ──> Transação liquidada com segurança no banco ──> IA notificada e responde no chat com sucesso.
 ```
 
 ---
 
-## 🤖 Padrão 3: Arquitetura de Agentes (Agentic Workflows)
+## 📊 4. Logs de Auditoria e Explicabilidade (XAI Ledger)
 
-Em vez de usar uma única chamada de prompt, os agentes de IA usam loops iterativos onde executam ações, avaliam os resultados e planejam os próximos passos de forma dinâmica.
-
-*   **Padrão ReAct (Reasoning and Acting):** O agente alterna entre gerar um pensamento sobre o problema e executar uma ação externa.
-*   **Multi-Agentic Workflows:** Divisão de um problema complexo em sub-tarefas executadas por agentes com papéis bem definidos (ex: Agente Desenvolvedor, Agente Revisor, Agente de Testes).
-*   **Reflection (Reflexão):** Padrão de design onde um modelo avalia e critica a própria resposta gerada (ou a resposta de outro modelo) para corrigir erros antes de exibir o resultado final ao usuário.
-
----
-
-## 🛡️ Padrão 4: Caching e Guardrails (Camadas de Controle)
-
-Para levar um sistema com LLM para produção, duas camadas adicionais de arquitetura são fundamentais:
-
-1.  **Semantic Caching (Cache Semântico):**
-    *   *Objetivo:* Economizar custos e reduzir a latência.
-    *   *Como funciona:* Salva as perguntas dos usuários e as respostas correspondentes da IA. Se um novo usuário fizer uma pergunta semanticamente idêntica (ex: "Como redefinir senha?" vs "Quero resetar minha senha"), o sistema retorna o cache em milissegundos sem chamar a API do LLM novamente.
-2.  **Guardrails (Barreiras de Proteção):**
-    *   *Objetivo:* Garantir conformidade, segurança e evitar vazamento de dados confidenciais.
-    *   *Como funciona:* Ferramentas intermediárias (ex: Guardrails AI, NeMo Guardrails) validam a entrada (prompt injection, tópicos banidos) e inspecionam a saída antes de ser enviada ao usuário final (garantindo que o formato JSON esteja correto ou que não haja dados confidenciais sendo expostos).
+Todos os passos tomados pelo agente de IA (pensamentos, chamadas de ferramentas e prompts montados) devem ser gravados em logs estruturados imutáveis. Isso permite auditoria forense caso o Banco Central ou um cliente questione as decisões tomadas pelo sistema inteligente.
